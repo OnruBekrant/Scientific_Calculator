@@ -137,16 +137,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            padding: EdgeInsets.zero,
           ),
           onPressed: () => _onButtonPressed(text),
           child: isIcon && text == '⌫'
               ? const Icon(Icons.backspace_outlined, size: 24.0)
-              : Text(
-                  text,
-                  style: const TextStyle(
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.bold,
+              : FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    text,
+                    style: const TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
         ),
@@ -201,11 +204,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     if (_result.isNotEmpty && _result != _input)
                       Container(
                         alignment: Alignment.bottomRight,
-                        child: Text(
-                          _result,
-                          style: const TextStyle(
-                            fontSize: 30.0,
-                            color: Colors.white54,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          reverse: true,
+                          child: Text(
+                            _result,
+                            style: const TextStyle(
+                              fontSize: 30.0,
+                              color: Colors.white54,
+                            ),
                           ),
                         ),
                       ),
@@ -220,59 +227,80 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 padding: const EdgeInsets.all(4.0),
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        _buildButton('sin(', funcColor),
-                        _buildButton('cos(', funcColor),
-                        _buildButton('tan(', funcColor),
-                        _buildButton('log(', funcColor),
-                      ],
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildButton('sin(', funcColor),
+                          _buildButton('cos(', funcColor),
+                          _buildButton('tan(', funcColor),
+                          _buildButton('log(', funcColor),
+                        ],
+                      ),
                     ),
-                    Row(
-                      children: [
-                        _buildButton('sqrt(', funcColor),
-                        _buildButton('^', funcColor),
-                        _buildButton('(', funcColor),
-                        _buildButton(')', funcColor),
-                      ],
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildButton('sqrt(', funcColor),
+                          _buildButton('^', funcColor),
+                          _buildButton('(', funcColor),
+                          _buildButton(')', funcColor),
+                        ],
+                      ),
                     ),
-                    Row(
-                      children: [
-                        _buildButton('7', numColor),
-                        _buildButton('8', numColor),
-                        _buildButton('9', numColor),
-                        _buildButton('÷', opColor),
-                      ],
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildButton('7', numColor),
+                          _buildButton('8', numColor),
+                          _buildButton('9', numColor),
+                          _buildButton('÷', opColor),
+                        ],
+                      ),
                     ),
-                    Row(
-                      children: [
-                        _buildButton('4', numColor),
-                        _buildButton('5', numColor),
-                        _buildButton('6', numColor),
-                        _buildButton('×', opColor),
-                      ],
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildButton('4', numColor),
+                          _buildButton('5', numColor),
+                          _buildButton('6', numColor),
+                          _buildButton('×', opColor),
+                        ],
+                      ),
                     ),
-                    Row(
-                      children: [
-                        _buildButton('1', numColor),
-                        _buildButton('2', numColor),
-                        _buildButton('3', numColor),
-                        _buildButton('-', opColor),
-                      ],
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildButton('1', numColor),
+                          _buildButton('2', numColor),
+                          _buildButton('3', numColor),
+                          _buildButton('-', opColor),
+                        ],
+                      ),
                     ),
-                    Row(
-                      children: [
-                        _buildButton('0', numColor),
-                        _buildButton('.', numColor),
-                        _buildButton('⌫', redColor, isIcon: true),
-                        _buildButton('+', opColor),
-                      ],
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildButton('0', numColor),
+                          _buildButton('.', numColor),
+                          _buildButton('⌫', redColor, isIcon: true),
+                          _buildButton('+', opColor),
+                        ],
+                      ),
                     ),
-                    Row(
-                      children: [
-                        _buildButton('C', redColor, flex: 2),
-                        _buildButton('=', greenColor, flex: 2),
-                      ],
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildButton('C', redColor, flex: 2),
+                          _buildButton('=', greenColor, flex: 2),
+                        ],
+                      ),
                     ),
                   ],
                 ),
