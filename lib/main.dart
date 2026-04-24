@@ -33,6 +33,75 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   String _input = '0';
   String _result = '';
   bool _evaluated = false;
+  final List<Map<String, String>> _history = [];
+
+  void _showHistory() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black87,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'History',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                    onPressed: () {
+                      setState(() {
+                        _history.clear();
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+              const Divider(color: Colors.white24),
+              Expanded(
+                child: _history.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No history yet',
+                          style: TextStyle(color: Colors.white54, fontSize: 18),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: _history.length,
+                        itemBuilder: (context, index) {
+                          // Show newest first
+                          final item = _history[_history.length - 1 - index];
+                          return ListTile(
+                            title: Text(item['expression']!, style: const TextStyle(color: Colors.white70, fontSize: 18)),
+                            subtitle: Text('=${item['result']!}', style: const TextStyle(color: Colors.greenAccent, fontSize: 22)),
+                            onTap: () {
+                              setState(() {
+                                _input = item['expression']!;
+                                _result = item['result']!;
+                                _evaluated = true;
+                              });
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   void _onButtonPressed(String buttonText) {
     setState(() {
@@ -115,6 +184,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         } else {
           _result = eval.toStringAsFixed(8).replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '');
         }
+        _history.add({'expression': _input, 'result': _result});
         _input = _result;
         _evaluated = true;
       });
@@ -173,15 +243,27 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              'Scientific Calculator',
-              style: TextStyle(
-                fontSize: 20.0,
-                color: Colors.white70,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Scientific Calculator',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              IconButton(
+                icon: const Icon(Icons.history, color: Colors.white70),
+                onPressed: _showHistory,
+              ),
+            ],
           ),
           const Spacer(),
           Container(
