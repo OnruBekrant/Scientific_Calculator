@@ -105,7 +105,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       GrammarParser p = GrammarParser();
       Expression exp = p.parse(expression);
       ContextModel cm = ContextModel();
-      double eval = exp.evaluate(EvaluationType.REAL, cm);
+      num evalNum = RealEvaluator(cm).evaluate(exp);
+      double eval = evalNum.toDouble();
 
       setState(() {
         // Format to remove trailing .0 if present
@@ -132,6 +133,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         padding: const EdgeInsets.all(4.0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
+            minimumSize: Size.zero,
             backgroundColor: color,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
@@ -165,148 +167,160 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     const Color redColor = Color(0xFFFC565A);
     const Color greenColor = Color(0xFF5AB65B);
 
+    Widget displayArea = Container(
+      padding: const EdgeInsets.all(16.0),
+      alignment: Alignment.topLeft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              'Scientific Calculator',
+              style: TextStyle(
+                fontSize: 20.0,
+                color: Colors.white70,
+              ),
+            ),
+          ),
+          const Spacer(),
+          Container(
+            alignment: Alignment.bottomRight,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              reverse: true,
+              child: Text(
+                _input,
+                style: const TextStyle(
+                  fontSize: 60.0,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          if (_result.isNotEmpty && _result != _input)
+            Container(
+              alignment: Alignment.bottomRight,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                reverse: true,
+                child: Text(
+                  _result,
+                  style: const TextStyle(
+                    fontSize: 30.0,
+                    color: Colors.white54,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+
+    Widget keypadArea = Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildButton('sin(', funcColor),
+                _buildButton('cos(', funcColor),
+                _buildButton('tan(', funcColor),
+                _buildButton('log(', funcColor),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildButton('sqrt(', funcColor),
+                _buildButton('^', funcColor),
+                _buildButton('(', funcColor),
+                _buildButton(')', funcColor),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildButton('7', numColor),
+                _buildButton('8', numColor),
+                _buildButton('9', numColor),
+                _buildButton('÷', opColor),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildButton('4', numColor),
+                _buildButton('5', numColor),
+                _buildButton('6', numColor),
+                _buildButton('×', opColor),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildButton('1', numColor),
+                _buildButton('2', numColor),
+                _buildButton('3', numColor),
+                _buildButton('-', opColor),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildButton('0', numColor),
+                _buildButton('.', numColor),
+                _buildButton('⌫', redColor, isIcon: true),
+                _buildButton('+', opColor),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildButton('C', redColor, flex: 2),
+                _buildButton('=', greenColor, flex: 2),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            // Display Area
-            Expanded(
-              flex: 2,
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                alignment: Alignment.topLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Scientific Calculator',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const Spacer(),
-                    Container(
-                      alignment: Alignment.bottomRight,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        reverse: true,
-                        child: Text(
-                          _input,
-                          style: const TextStyle(
-                            fontSize: 60.0,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (_result.isNotEmpty && _result != _input)
-                      Container(
-                        alignment: Alignment.bottomRight,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          reverse: true,
-                          child: Text(
-                            _result,
-                            style: const TextStyle(
-                              fontSize: 30.0,
-                              color: Colors.white54,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            // Keypad Area
-            Expanded(
-              flex: 5,
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildButton('sin(', funcColor),
-                          _buildButton('cos(', funcColor),
-                          _buildButton('tan(', funcColor),
-                          _buildButton('log(', funcColor),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildButton('sqrt(', funcColor),
-                          _buildButton('^', funcColor),
-                          _buildButton('(', funcColor),
-                          _buildButton(')', funcColor),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildButton('7', numColor),
-                          _buildButton('8', numColor),
-                          _buildButton('9', numColor),
-                          _buildButton('÷', opColor),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildButton('4', numColor),
-                          _buildButton('5', numColor),
-                          _buildButton('6', numColor),
-                          _buildButton('×', opColor),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildButton('1', numColor),
-                          _buildButton('2', numColor),
-                          _buildButton('3', numColor),
-                          _buildButton('-', opColor),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildButton('0', numColor),
-                          _buildButton('.', numColor),
-                          _buildButton('⌫', redColor, isIcon: true),
-                          _buildButton('+', opColor),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildButton('C', redColor, flex: 2),
-                          _buildButton('=', greenColor, flex: 2),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+        child: OrientationBuilder(
+          builder: (context, orientation) {
+            if (orientation == Orientation.landscape) {
+              return Row(
+                children: [
+                  Expanded(flex: 3, child: displayArea),
+                  Expanded(flex: 4, child: keypadArea),
+                ],
+              );
+            } else {
+              return Column(
+                children: [
+                  Expanded(flex: 2, child: displayArea),
+                  Expanded(flex: 5, child: keypadArea),
+                ],
+              );
+            }
+          },
         ),
       ),
     );
